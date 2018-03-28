@@ -21,6 +21,11 @@ int leftSensor = 0;
 int middleSensor = 0;
 int rightSensor = 0;
 
+//variables to store turning radii
+int correctRadius = 5;
+int turnRadius = 20;
+int seekRadius = 30;
+
 float leftSensorRunning = 0;
 float middleSensorRunning = 0;
 float rightSensorRunning = 0;
@@ -70,22 +75,22 @@ void loop() {
     } else if (middleSensor == 1 && rightSensor == 1 && leftSensor == 0) {
       //correct right
       currentState = normalDrive;
-      steeringServo.write(95);
+      steeringServo.write(90 + correctRadius);
       analogWrite(motorPort, currentSpeed);
     } else if (middleSensor == 1 && rightSensor == 0 && leftSensor == 1) {
       //correct left
       currentState = normalDrive;
-      steeringServo.write(85);
+      steeringServo.write(90 - correctRadius);
       analogWrite(motorPort, currentSpeed);
     } else if (middleSensor == 0 && rightSensor == 1 && leftSensor == 0) {
       //turn right
-      steeringServo.write(120);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 + turnRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       previousSensor = 2;
     } else if (middleSensor == 0 && rightSensor == 0 && leftSensor == 1) {
       //turn left
-      steeringServo.write(65);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 - turnRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       previousSensor = 1;
     } else if (rightSensor == 1 && leftSensor == 1) {
       //stop
@@ -95,13 +100,13 @@ void loop() {
       if(previousSensor == 1) {
         //seek left
         currentState = seekLeft;
-        steeringServo.write(65);
-        analogWrite(motorPort, currentSpeed - 15);
+        steeringServo.write(90 - seekRadius);
+        analogWrite(motorPort, currentSpeed - 40);
       } else if (previousSensor == 2) {
         //seek right
         currentState = seekRight;
-        steeringServo.write(120);
-        analogWrite(motorPort, currentSpeed - 15);
+        steeringServo.write(90 + seekRadius);
+        analogWrite(motorPort, currentSpeed - 40);
       } else {
         //Serial.println("No Previous Sensor Data");
         steeringServo.write(90);
@@ -114,18 +119,18 @@ void loop() {
   } else if (currentState == seekRight) {
     //Serial.println("Seeking Right");
     if(rightSensor == 0 && leftSensor == 0 && middleSensor == 0) {
-      steeringServo.write(120);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 + seekRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       currentState = seekRight;
       Serial.println("Line lost");
     } else if(rightSensor == 1 && leftSensor == 0 && middleSensor == 0) {
-      steeringServo.write(110);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 + turnRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       currentState = seekRight;
       Serial.println("Outside sensor found");
     } else if (rightSensor == 1 && leftSensor == 0 && middleSensor == 1) {
-      steeringServo.write(95);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 + correctRadius);
+      analogWrite(motorPort, currentSpeed);
       currentState = normalDrive;
       Serial.println("Outside and Middle sensor found");
     } else {
@@ -136,18 +141,18 @@ void loop() {
   } else if (currentState == seekLeft) {
     //Serial.println("Seeking Left");
     if(rightSensor == 0 && leftSensor == 0 && middleSensor == 0) {
-      steeringServo.write(65);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 - seekRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       currentState = seekLeft;
       Serial.println("Line lost");
     } else if(rightSensor == 0 && leftSensor == 1 && middleSensor == 0) {
-      steeringServo.write(75);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 - turnRadius);
+      analogWrite(motorPort, currentSpeed - 40);
       currentState = seekLeft;
       Serial.println("Outside sensor found");
     } else if (rightSensor == 0 && leftSensor == 1 && middleSensor == 1) {
-      steeringServo.write(85);
-      analogWrite(motorPort, currentSpeed - 15);
+      steeringServo.write(90 - correctRadius);
+      analogWrite(motorPort, currentSpeed);
       currentState = normalDrive;
       Serial.println("Outside and Middle sensor found");
     } else {
