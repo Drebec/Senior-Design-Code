@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 Servo steeringServo;  //create steeringServo
-int currentSpeed = 210; //enumerate speed and acceleration
+int currentSpeed = 190; //enumerate speed and acceleration
 int acceleration = 20;
 
 //enumerate ports for motor and sensors
@@ -39,6 +39,8 @@ void setup() {
 
   Serial.begin(9600);
 
+  analogWrite(motorPort, currentSpeed);
+  delay(500);
   //setMotorSpeed(120);
 }
 
@@ -94,8 +96,9 @@ void loop() {
       previousSensor = 1;
     } else if (rightSensor == 1 && leftSensor == 1) {
       //stop
+      delay(100);
       analogWrite(motorPort, 0);
-      //exit(0);
+      exit(0);
     } else if (rightSensor == 0 && leftSensor == 0 && middleSensor == 0) {
       if(previousSensor == 1) {
         //seek left
@@ -146,7 +149,7 @@ void loop() {
       currentState = seekLeft;
       Serial.println("Line lost");
     } else if(rightSensor == 0 && leftSensor == 1 && middleSensor == 0) {
-      steeringServo.write(90 - turnRadius);
+      steeringServo.write(90 - (turnRadius-5));
       analogWrite(motorPort, currentSpeed - 40);
       currentState = seekLeft;
       Serial.println("Outside sensor found");
